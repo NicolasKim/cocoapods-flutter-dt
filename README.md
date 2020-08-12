@@ -32,9 +32,22 @@ Here is simple [binary server](https://github.com/NicolasKim/binary_server.git)
 
 
 ### Archive
-pod flutter archive package_name 0.0.1 --repo=cocoapods --wrapper=flutterw --sources=https://github.com/iosThird/swiftThird/FYSwiftSpecs.git,https://github.com/Cocoapods/Specs.git
+```shell script
+$ pod flutter archive package_name 0.0.1 --repo=cocoapods --wrapper=flutterw --sources=https://github.com/private_spec_repo.git,https://github.com/Cocoapods/Specs.git
+```
 
-There is more options. use `pod flutter archive -h` to consider more options you need. 
+
+There is more options
+```shell script
+$ pod flutter archive --help
+--repo                                 podspec repo
+--sources                              podspec sources
+--upgrade                              pub upgrade
+--wrapper                              Default is flutter
+--flutterversion                       FlutterSDK version
+--buildrun                             run build-runner
+```
+ 
 
 ### Use
 

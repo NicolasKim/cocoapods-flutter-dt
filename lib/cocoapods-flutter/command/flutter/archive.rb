@@ -10,7 +10,7 @@ module Pod
         DESC
 
         self.arguments = [
-            CLAide::Argument.new(['MODULE', 'VERSION', 'PODREPO'], false)
+            CLAide::Argument.new([''], false)
         ]
 
         def self.options
