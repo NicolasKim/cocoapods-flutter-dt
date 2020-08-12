@@ -32,7 +32,9 @@ Here is simple [binary server](https://github.com/NicolasKim/binary_server.git)
 
 
 ### Archive
+
 ```shell script
+$ cd flutter project
 $ pod flutter archive package_name 0.0.1 --repo=cocoapods --wrapper=flutterw --sources=https://github.com/private_spec_repo.git,https://github.com/Cocoapods/Specs.git
 ```
 
