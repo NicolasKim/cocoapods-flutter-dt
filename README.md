@@ -1,6 +1,6 @@
 # cocoapods-flutter
 
-Cocoapods plugin for integration Flutter easily.
+Cocoapods plugin for Flutter project integration.
 
 ## Installation
 
