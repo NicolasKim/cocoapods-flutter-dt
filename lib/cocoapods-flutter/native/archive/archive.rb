@@ -48,7 +48,12 @@ class Archiver
   def archive
 
     @pub_upgrade ? pub_upgrade : pub_get
-    setup_pod_sources
+    if local_podfile_exists?
+      use_local_podfile
+    else
+      setup_pod_sources
+    end
+
     if @build_run
       excute_build_run
     end
@@ -118,6 +123,11 @@ class Archiver
     end
   end
 
+  def local_podfile_exists?
+    local_podfile_dir = @working_dir + '/local_podfile'
+    File.exist? local_podfile_dir
+  end
+
   def setup_pod_sources
     Pod::UserInterface.info 'Setup pod sources...'
     origin_pod_file_root_dir = @working_dir + '/.ios'
@@ -164,6 +174,16 @@ class Archiver
       file.close
     end
 
+  end
+
+  def use_local_podfile
+    origin_pod_file_root_dir = @working_dir + '/.ios'
+    origin_pod_file_dir = origin_pod_file_root_dir+ '/Podfile'
+    if File.exist? origin_pod_file_dir
+      File.delete(origin_pod_file_dir)
+    end
+    local_podfile_dir = @working_dir + '/local_podfile'
+    FileUtils.copy_file local_podfile_dir, origin_pod_file_dir
   end
 
   def excute_build_run

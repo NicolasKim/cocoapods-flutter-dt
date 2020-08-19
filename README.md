@@ -49,7 +49,7 @@ $ pod flutter archive --help
 --flutterversion                       FlutterSDK version
 --buildrun                             run build-runner
 ```
- 
+If you need to customize the .ios/Podfile, you can create a file name of 'local_podfile', the tool will use this file in first priority.
 
 ### Use
 
