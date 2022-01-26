@@ -32,7 +32,7 @@ class Archiver
 
   public
 
-  def initialize(module_name, version, sources, flutter_wrapper, pub_upgrade, flutter_version, build_run, working_dir, repo)
+  def initialize(module_name, version, sources, flutter_wrapper, pub_upgrade, flutter_version, build_run, working_dir, repo, build_modes)
     @module_name = module_name
     @version = version
     @sources = sources
@@ -43,6 +43,7 @@ class Archiver
     @working_dir = working_dir
     @product_dir = "#{@working_dir}/.product/"
     @pod_repo = repo
+    @build_modes = build_modes
   end
 
   def archive
@@ -59,8 +60,17 @@ class Archiver
     end
     build_framework
     @plugins = fetch_plugins
-    debug
-    release
+
+    if @build_modes.include?('debug')
+      # Debug瘦身
+      thin_arm64 "#{@product_dir}Debug/App.framework/App"
+      debug
+    end
+
+    if @build_modes.include?('release')
+      release
+    end
+
     Pod::UserInterface.message "All is ready to use!, now you can use 'flutter_pod '#{@module_name}', '#{@version}', :mode=>'debug/release' to use the pod"
   end
 
@@ -98,6 +108,22 @@ class Archiver
   end
 
   private
+
+  def thin_arm64(path)
+    # thin arm64
+    thin_commands = [
+        'lipo',
+        path,
+        '-thin',
+        "arm64",
+        '-output',
+        path,
+    ]
+
+    if CommandRunner.run(*thin_commands) == false
+      raise "Error running #{commands.join ' '} "
+    end
+  end
 
   def release
     app_file, sdk_file = zip_files @plugins, 'Release'
@@ -188,21 +214,39 @@ class Archiver
 
   def excute_build_run
     if CommandRunner.run(@flutter_wrapper, 'packages','pub','run','build_runner','build','--delete-conflicting-outputs') == false
-      raise "run build_runner fail"
+      raise "Error running #{@flutter_wrapper} packages pub run build_runner build --delete-conflicting-outputs"
     end
   end
 
   def build_framework
-    if CommandRunner.run(@flutter_wrapper, 'build','ios-framework',"--output=#{@product_dir}") == false
-      # FileUtils.remove_dir product_dir, true
-      raise "run build_runner fail"
+
+    commands = [
+        @flutter_wrapper,
+        'build',
+        'ios-framework',
+        "--output=#{@product_dir}",
+        '--no-profile'
+    ]
+
+    if @build_modes.include?('debug') == false
+      commands.append '--no-debug'
     end
+
+    if @build_modes.include?('release') == false
+      commands.append '--no-release'
+    end
+
+    if CommandRunner.run(*commands) == false
+      # FileUtils.remove_dir product_dir, true
+      raise "Error running #{commands.join ' '} "
+    end
+
   end
 
   def build_app(mode)
     if CommandRunner.run(@flutter_wrapper, 'build','ios',"--#{mode}" ,"--no-codesign") == false
       # FileUtils.remove_dir product_dir, true
-      raise "run build_runner fail"
+      raise "Error running #{@flutter_wrapper} build ios --#{mode} --no-codesign"
     end
   end
 
@@ -366,8 +410,10 @@ end
       s.license               = { :type => 'BSD' }
       s.author                = { 'Dreamtracer' => 'http://dreamtracer.top' }
       s.source                = { :http => app_download_url }
-      s.ios.deployment_target = '9.0'
+      s.ios.deployment_target = '10.0'
       s.prepare_command = "ruby download_sdk.rb #{sdk_download_url}"
+      s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64 x86_64' }
+      s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64 x86_64' }
       vendored_frameworks = ["App.framework", "Flutter.framework", "FlutterPluginRegistrant.framework"]
       @plugins.each do |plugin|
         vendored_frameworks.append "#{plugin.name}.framework"
@@ -386,7 +432,8 @@ end
     end
 
     Dir.chdir temp_dir do |dir|
-      Pod::Command::Repo::Push.run([@pod_repo, '--allow-warnings', "--sources=#{@sources.join(',')}"])
+      Pod::Command::Repo::Push.run([@pod_repo, '--skip-import-validation', '--verbose', '--allow-warnings', "--sources=#{@sources.join(',')}"])
+      File.delete spec_file
     end
 
   end

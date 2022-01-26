@@ -35,13 +35,13 @@ Here is simple [binary server](https://github.com/NicolasKim/binary_server.git)
 
 ```shell script
 $ cd flutter project
-$ pod flutter archive package_name 0.0.1 --repo=cocoapods --wrapper=flutterw --sources=https://github.com/private_spec_repo.git,https://github.com/Cocoapods/Specs.git
+$ pod flutter foryou package_name 0.0.1 --repo=cocoapods --wrapper=flutterw --sources=https://github.com/private_spec_repo.git,https://github.com/Cocoapods/Specs.git
 ```
 
 
 There is more options
 ```shell script
-$ pod flutter archive --help
+$ pod flutter foryou --help
 --repo                                 podspec repo
 --sources                              podspec sources
 --upgrade                              pub upgrade

@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = CocoapodsFlutter::VERSION
   spec.authors       = ['Dreamtracer']
   spec.email         = ['jinqiucheng1006@live.cn']
-  spec.description   = %q{Flutter archive tool}
-  spec.summary       = %q{Simple way to archive and use}
+  spec.description   = %q{Flutter foryou tool}
+  spec.summary       = %q{Simple way to foryou and use}
   spec.homepage      = 'https://github.com/NicolasKim/cocoapods-flutter-dt.git'
   spec.license       = 'MIT'
 
@@ -19,10 +19,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'parallel'
-  spec.add_dependency 'cocoapods', '~> 1.4'
+  spec.add_dependency 'cocoapods', '~> 1.11.2'
   spec.add_dependency 'rubyzip', '>= 1.0.0'
   spec.add_dependency 'rest-client'
-  spec.add_dependency 'molinillo',  '~> 0.6.6'
+  spec.add_dependency 'molinillo'
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
 end
